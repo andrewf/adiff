@@ -28,3 +28,18 @@
       (println rhs)
       (cons (first lhs) (compose (rest lhs) rhs))) ))
 
+(defn write-dimension
+  [item]
+  ; D is really the only thing with a w of 0
+  (if (= item 'D) 0 1))
+
+(defn read-dimension
+  [item]
+  ; D and I read, everything else just inserts
+  (if (or (= item 'I) (= item 'D)) 1 0))
+
+
+(defn dimension
+  "return [write, read] dimensions"
+  [patch]
+  [(apply + (map write-dimension patch)) (apply + (map read-dimension patch))])
