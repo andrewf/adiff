@@ -9,7 +9,7 @@
     (and (empty? lhs) (empty? rhs)) (do (println "terminate") '())
 
     ; propagate D from bottom to top, source to output
-    ;(= (first rhs) 'D) (cons 'D (compose lhs (rest)))
+    (= (first rhs) 'D) (cons 'D (compose lhs (rest rhs)))
 
     ; apply D from top/lhs
     (= (first lhs) 'D) (compose (rest lhs) (rest rhs))

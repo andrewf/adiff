@@ -6,4 +6,5 @@
   (testing "Single items"
     (is (= (compose '(D) '(y)) '()))
     (is (= (compose '(y) '())  '(y)))
+    (is (= (compose '()  '(D)) '(D)))
 ))
