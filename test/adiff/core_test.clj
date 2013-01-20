@@ -19,7 +19,15 @@
     (is (= (compose '(D D D I f) '(a b c d)) '(d f)))
     (is (= (compose '(D I D f) '(c d g)) '(d f)))
     (is (= (compose '(I I x y z) '(D D D D I I)) '(D D D D I I x y z)))
-    (is (= (compose '(D D D D I I x y z) '(a b c d e f)) '(e f x y z)))
+    (is (= (compose '(y) '(D)) '(D y)))
+    (is (= (compose '(D D D D I I x y z) '(a b c d e f)) '(e f x y z))))
+  (testing "incompatible lists"
+    (is (thrown? UnsupportedOperationException (compose '(D) '())))
+    (is (thrown? UnsupportedOperationException (compose '(I I x) '(a b c) )))
+    (is (thrown? UnsupportedOperationException (compose '(D I D I) '(D I D I) )))
+    (is (thrown? UnsupportedOperationException (compose '(D) '(D) )))
+    (is (thrown? UnsupportedOperationException (compose '(a b c) '(x I y) )))
+    ;(is (thrown? UnsupportedOperationException (compose '() '() )))
 ))
 
 (deftest dimensions
@@ -36,4 +44,5 @@
     (is (= (dimension '(a D I)) [2 2]))
     (is (= (dimension '(I D a b D)) [3 3]))
     (is (= (dimension '(D D I I f)) [3 4]))
-))
+    (is (= (dimension '(D D D D I I x y z)) [5 6])))
+)

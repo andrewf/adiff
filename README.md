@@ -77,7 +77,7 @@ model (i.e, s-expressions).
 
 ## Usage
 
-Just call the adiff.core.compose function with two lists or vectors or what have you, anything that supports (first) and (rest), of compatible sizes (TODO: dimension checking), like (compose '(a b D I) '(x y))
+Just call the adiff.core.compose function with two lists or vectors or what have you, anything that supports (first) and (rest), of compatible sizes, like (compose '(a b D I) '(x y)). It will raise UnsupportedOperationException if the patches are incompatible.
 
 ## License
 
