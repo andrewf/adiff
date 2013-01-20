@@ -15,7 +15,7 @@
     (= (first lhs) 'D) (compose (rest lhs) (rest rhs))
 
     ; I in lhs copies value
-    ;(= (first lhs) 'I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
+    (= (first lhs) 'I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
 
     ; other stuff in lhs is inserted
     :else (do
