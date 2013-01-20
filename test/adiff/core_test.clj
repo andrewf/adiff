@@ -4,8 +4,6 @@
 
 (deftest singles
   (testing "Single items"
-    (is (= 0 1))))
-
-(deftest associatvity
-  (testing "associativity"
-    (is (= 1 1))))
+    (is (= (compose '(D) '(y)) '()))
+    (is (= (compose '(y) '())  '(y)))
+))
