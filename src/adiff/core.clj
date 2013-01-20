@@ -11,8 +11,11 @@
     ; propagate D from bottom to top, source to output
     (= (first rhs) 'D) (cons 'D (compose lhs (rest rhs)))
 
-    ; apply D from top/lhs
-    (= (first lhs) 'D) (compose (rest lhs) (rest rhs))
+    ; apply D from top/lhs. D.y = <>, D.I = D
+    (= (first lhs) 'D)
+      (if (= (first rhs) 'I)
+        (cons 'D (compose (rest lhs) (rest rhs)))
+        (compose (rest lhs) (rest rhs)))
 
     ; I in lhs copies value
     (= (first lhs) 'I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
