@@ -6,7 +6,7 @@
   (cond
 
     ; terminate if either list is empty
-    (and (empty? lhs) (empty? rhs)) (do (println "terminate") '())
+    (and (empty? lhs) (empty? rhs)) '()
 
     ; propagate D from bottom to top, source to output
     (= (first rhs) 'D) (cons 'D (compose lhs (rest rhs)))
@@ -21,12 +21,8 @@
     (= (first lhs) 'I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
 
     ; other stuff in lhs is inserted
-    :else (do
-      (println "insert")
-      (println (first lhs))
-      (println (rest lhs))
-      (println rhs)
-      (cons (first lhs) (compose (rest lhs) rhs))) ))
+    :else (cons (first lhs) (compose (rest lhs) rhs)) ))
+
 
 (defn write-dimension
   [item]

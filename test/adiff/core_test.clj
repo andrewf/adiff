@@ -12,6 +12,16 @@
     (is (= (compose '(D) '(I)) '(D)))
 ))
 
+(deftest lists
+  (testing "compatible lists"
+    (is (= (compose '(D D I I g) '(a b c d)) '(c d g)))
+    (is (= (compose '(D I D f) '(D D I I g)) '(D D D I f)))
+    (is (= (compose '(D D D I f) '(a b c d)) '(d f)))
+    (is (= (compose '(D I D f) '(c d g)) '(d f)))
+    (is (= (compose '(I I x y z) '(D D D D I I)) '(D D D D I I x y z)))
+    (is (= (compose '(D D D D I I x y z) '(a b c d e f)) '(e f x y z)))
+))
+
 (deftest dimensions
   (testing "item dimensions"
     (is (= (write-dimension 'D) 0))
