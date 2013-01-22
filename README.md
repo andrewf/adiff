@@ -4,11 +4,9 @@ An implementation of associative patch composition.
 
 ## Theory
 
-There are two interesting ideas here: one, all data is a patch, and you
-should be able to treat a patch just like the data it operates on. The first
-is stolen straight out of Google Wave [1] (except simpler), and I'm pretty sure the Wave team
-didn't invent it either. The second works out to saying that patch application
-should be associative, which I haven't seen put in quite this way before.
+There are two interesting ideas here. One is that all data is a patch, with "plain" data interpreted as a patch against some null or empty object. The second is that you should be able to treat a patch just like the data it operates on. More specifically, if you have some data D and a patch P1 on D, applying P1 to D and then applying P2 should be the same as applying P2 to P1, then applying the resulting patch to D; in other words, patch application should be associative.
+
+The first is stolen straight out of Google Wave [1] (except simpler), and I'm pretty sure the Wave team didn't invent it either. I haven't seen the second idea put quite this way before.
 
 For now, I represent patches as simple lists of tokens, symbols mostly in this
 implementation, of which only two are special, I and D. For example:
