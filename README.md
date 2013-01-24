@@ -57,10 +57,11 @@ not quite work. Naively,
 The trick is to carry D's in the right patch into the output. This makes sure
 that whatever the D would have deleted if we had composed from right to left
 still gets deleted. Also, D*I = D for similar reasons: the D needs to delete
-whatever the I would have kept if it had been evaluated first. And I*D is
-obviously D as well.
+whatever the I would have kept if it had been evaluated first.
 
     ([x I D]*[D I I])*[a b c] = [D x I D]*[a b c] = [x b]
+
+I*D is undefined because of dimensionality, except that [I]*[D] = [D I].
 
 So that's the result of about 3 days worth of obsessing over the problem. In
 the following semi-formal definition, I'll write arbitrary sequences of symbols
