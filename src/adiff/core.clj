@@ -4,12 +4,12 @@
 (defn write-dimension
   [item]
   ; D is really the only thing with a w of 0
-  (if (= item 'D) 0 1))
+  (if (= item :D) 0 1))
 
 (defn read-dimension
   [item]
   ; D and I read, everything else just inserts
-  (if (or (= item 'I) (= item 'D)) 1 0))
+  (if (or (= item :I) (= item :D)) 1 0))
 
 
 (defn dimension
@@ -32,16 +32,16 @@
     (and (empty? lhs) (empty? rhs)) '()
 
     ; propagate D from bottom to top, source to output
-    (= (first rhs) 'D) (cons 'D (compose lhs (rest rhs)))
+    (= (first rhs) :D) (cons :D (compose lhs (rest rhs)))
 
     ; apply D from top/lhs. D.y = <>, D.I = D
-    (= (first lhs) 'D)
-      (if (= (first rhs) 'I)
-        (cons 'D (compose (rest lhs) (rest rhs)))
+    (= (first lhs) :D)
+      (if (= (first rhs) :I)
+        (cons :D (compose (rest lhs) (rest rhs)))
         (compose (rest lhs) (rest rhs)))
 
     ; I in lhs copies value
-    (= (first lhs) 'I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
+    (= (first lhs) :I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
 
     ; other stuff in lhs is inserted
     :else (cons (first lhs) (compose (rest lhs) rhs)) ))
