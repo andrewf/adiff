@@ -14,6 +14,7 @@
 
 (deftest lists
   (testing "compatible lists"
+    (is (= (compose [] []) []))
     (is (= (compose [:D :D :I :I :g] [:a :b :c :d]) [:c :d :g]))
     (is (= (compose [:D :I :D :f] [:D :D :I :I :g]) [:D :D :D :I :f]))
     (is (= (compose [:D :D :D :I :f] [:a :b :c :d]) [:d :f]))
@@ -27,8 +28,8 @@
     (is (thrown? UnsupportedOperationException (compose [:D :I :D :I] [:D :I :D :I] )))
     (is (thrown? UnsupportedOperationException (compose [:D] [:D] )))
     (is (thrown? UnsupportedOperationException (compose [:a :b :c] [:x :I :y] )))
-    ;(is (thrown? UnsupportedOperationException (compose [] [] )))
-))
+  )
+)
 
 (deftest dimensions
   (testing "item dimensions"
