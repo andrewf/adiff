@@ -26,13 +26,17 @@
     ; read dimension of lhs must = write dimension of rhs
     (not (= ((dimension lhs) 1)
             ((dimension rhs) 0)))
-      (throw (UnsupportedOperationException. "Cannot compose patches with incompatible dimension"))
+      (throw (UnsupportedOperationException.
+              "Cannot compose patches with incompatible dimension"))
 
     ; terminate if either list is empty
     (and (empty? lhs) (empty? rhs)) '()
 
-    ; propagate D from bottom to top, source to output
-    (= (first rhs) :D) (cons :D (compose lhs (rest rhs)))
+    ; propagate write-0 items from source to output
+    (= (write-dimension (first rhs)) 0) (cons (first rhs) (compose lhs (rest rhs)))
+    
+    ; insert read-0 items from patch (lhs) to output
+    (= (read-dimension (first lhs)) 0) (cons (first lhs) (compose (rest lhs) rhs))
 
     ; apply D from top/lhs. D.y = <>, D.I = D
     (= (first lhs) :D)
@@ -43,6 +47,7 @@
     ; I in lhs copies value
     (= (first lhs) :I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
 
-    ; other stuff in lhs is inserted
-    :else (cons (first lhs) (compose (rest lhs) rhs)) ))
+    ; other stuff in lhs is inserted. TODO better error type/msg
+    :else (throw (UnsupportedOperationException. "Invalid token or something"))
+))
 
