@@ -18,6 +18,19 @@
   [(apply + (map write-dimension patch)) (apply + (map read-dimension patch))])
 
 
+(defn compose-single
+  "compose a read-1 lhs and write-1 rhs"
+  [lhs rhs tail]
+  (cond
+    (= lhs :D)
+      (if (= (read-dimension rhs) 1) 
+        (cons :D tail)  ; :D has to delete what rhs would have read
+        tail)  ; D*y = []
+    (= lhs :I) (cons rhs tail)
+  )
+)
+
+
 (defn compose
   "Process next glyphs from RHS and LHS, and return resulting patch. LHS is patch, RHS is source"
   [lhs rhs]
@@ -38,16 +51,6 @@
     ; insert read-0 items from patch (lhs) to output
     (= (read-dimension (first lhs)) 0) (cons (first lhs) (compose (rest lhs) rhs))
 
-    ; apply D from top/lhs. D.y = <>, D.I = D
-    (= (first lhs) :D)
-      (if (= (first rhs) :I)
-        (cons :D (compose (rest lhs) (rest rhs)))
-        (compose (rest lhs) (rest rhs)))
-
-    ; I in lhs copies value
-    (= (first lhs) :I) (cons (first rhs) (compose (rest lhs) (rest rhs)))
-
-    ; other stuff in lhs is inserted. TODO better error type/msg
-    :else (throw (UnsupportedOperationException. "Invalid token or something"))
+    :else (compose-single (first lhs) (first rhs) (compose (rest lhs) (rest rhs)))
 ))
 
