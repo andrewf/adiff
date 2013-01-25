@@ -19,13 +19,13 @@
 
 
 (defn compose-single
-  "compose a read-1 lhs and write-1 rhs"
+  "compose a read-1 lhs and write-1 rhs, and cons the result with tail"
   [lhs rhs tail]
   (cond
     (= lhs :D)
       (if (= (read-dimension rhs) 1) 
         (cons :D tail)  ; :D has to delete what rhs would have read
-        tail)  ; D*y = []
+        tail)  ; D*y = <>, return tail unchanged
     (= lhs :I) (cons rhs tail)
   )
 )
@@ -51,6 +51,8 @@
     ; insert read-0 items from patch (lhs) to output
     (= (read-dimension (first lhs)) 0) (cons (first lhs) (compose (rest lhs) rhs))
 
-    :else (compose-single (first lhs) (first rhs) (compose (rest lhs) (rest rhs)))
+    :else (compose-single (first lhs)
+                          (first rhs)
+                          (compose (rest lhs) (rest rhs)))
 ))
 
