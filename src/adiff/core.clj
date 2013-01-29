@@ -1,35 +1,34 @@
 (ns adiff.core)
 
-(defn unq
-  "short for unquote, create a list item with special behavior, eg it reads from input"
-  [inside]
-  {:inside inside}
+(defrecord reader
+  "create a list item with special behavior, eg it reads from input"
+  [:inside]
 )
 
-(def %D (unq :D))
-(def %I (unq :I))
+(def %D (reader. :D))
+(def %I (reader. :I))
 
-(defn unq?
+(defn reader?
   [item]
-  (instance? clojure.lang.PersistentArrayMap item))
+  (instance? reader item))
 
 (defn delete?
   [item]
-  (and (unq? item) (= (item :inside) :D)))
+  (and (reader? item) (= (item :inside) :D)))
 
 (defn keep?
   [item]
-  (and (unq? item) (= (item :inside) :I)))
+  (and (reader? item) (= (item :inside) :I)))
 
 (defn write-dimension
   [item]
-  ; unq D is really the only thing with a w of 0
-  (if (and (unq? item) (= (item :inside) :D)) 0 1))
+  ; reader D is really the only thing with a w of 0
+  (if (and (reader? item) (= (item :inside) :D)) 0 1))
 
 (defn read-dimension
   [item]
-  ; only unqs can read
-  (if (unq? item) 1 0))
+  ; only readers can read
+  (if (reader? item) 1 0))
 
 
 (defn dimension
@@ -41,11 +40,11 @@
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
   [lhs rhs]
-  (assert (unq? lhs)) ; otherwise wouldn't be a reader, and composing is invalid
+  (assert (reader? lhs)) ; otherwise wouldn't be a reader, and composing is invalid
   (cond
     (delete? lhs)
-      (if (unq? rhs)
-        (unq :D)   ; :D has to delete what rhs would have read
+      (if (reader? rhs)
+        (reader :D)   ; :D has to delete what rhs would have read
         nil)  ; D*y = []
     (keep? lhs) rhs
   )
