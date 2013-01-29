@@ -1,15 +1,32 @@
 (ns adiff.core)
 
+(defn unq
+  "short for unquote, create a list item with special behavior, eg it reads from input"
+  [inside]
+  {:inside inside}
+)
+
+(defn unq?
+  [item]
+  (instance? clojure.lang.PersistentArrayMap item))
+
+(defn delete?
+  [item]
+  (and (unq? item) (= (item :inside) :D)))
+
+(defn keep?
+  [item]
+  (and (unq? item) (= (item :inside) :I)))
 
 (defn write-dimension
   [item]
-  ; D is really the only thing with a w of 0
-  (if (= item :D) 0 1))
+  ; unq D is really the only thing with a w of 0
+  (if (and (unq? item) (= (item :inside) :D)) 0 1))
 
 (defn read-dimension
   [item]
-  ; D and I read, everything else just inserts
-  (if (or (= item :I) (= item :D)) 1 0))
+  ; only unqs can read
+  (if (unq? item) 1 0))
 
 
 (defn dimension
@@ -21,12 +38,13 @@
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
   [lhs rhs]
+  (assert (unq? lhs)) ; otherwise wouldn't be a reader, and composing is invalid
   (cond
-    (= lhs :D)
-      (if (= (read-dimension rhs) 1) 
-        :D   ; :D has to delete what rhs would have read
+    (delete? lhs)
+      (if (unq? rhs)
+        (unq :D)   ; :D has to delete what rhs would have read
         nil)  ; D*y = []
-    (= lhs :I) rhs
+    (keep? lhs) rhs
   )
 )
 
