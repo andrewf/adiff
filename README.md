@@ -1,9 +1,11 @@
 # adiff
 
-An implementation of associative patch composition, more or less mathematically
-proven.
+An (extremely simple) implementation of associative patch composition, more
+or less mathematically proven.
 
 ## Theory
+
+### Motivation
 
 There are two interesting ideas here. One is that all data is a patch, with
 "plain" data interpreted as a patch against some null or empty object. The
@@ -16,9 +18,12 @@ In other words, patch application should be associative.
 
 The first idea is stolen straight out of Google Wave [1] (except simpler),
 and I'm pretty sure the Wave team didn't invent it either. I haven't seen
-the second idea put quite this way before.
+the second idea put quite this way before. It's quite possible my
+Google-fu is inadequate.
 
-For now, I represent patches as simple lists of tokens, symbols mostly in this
+### Simple (non-nested) patches
+
+For now, I represent patches as simple lists of tokens, keywords mostly in this
 implementation, of which only two are special, I and D. For example:
 
     [a b c d] * [] = [a b c d]
