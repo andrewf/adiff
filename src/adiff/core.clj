@@ -19,14 +19,14 @@
 
 
 (defn compose-single
-  "compose a read-1 lhs and write-1 rhs, and cons the result with tail"
-  [lhs rhs tail]
+  "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
+  [lhs rhs]
   (cond
     (= lhs :D)
       (if (= (read-dimension rhs) 1) 
-        (cons :D tail)  ; :D has to delete what rhs would have read
-        tail)  ; D*y = <>, return tail unchanged
-    (= lhs :I) (cons rhs tail)
+        :D   ; :D has to delete what rhs would have read
+        nil)  ; D*y = []
+    (= lhs :I) rhs
   )
 )
 
@@ -51,8 +51,13 @@
     ; insert read-0 items from patch (lhs) to output
     (= (read-dimension (first lhs)) 0) (cons (first lhs) (compose (rest lhs) rhs))
 
-    :else (compose-single (first lhs)
-                          (first rhs)
-                          (compose (rest lhs) (rest rhs)))
+    ; the two head elements are read-1 and write-1, composable
+    ; compose them, and cons the (optional) result with the composition
+    ; of the rest of the list. Be sure to handle empty cases
+    :else
+      (let [tail (compose (rest lhs) (rest rhs))]
+        (if-let [front (compose-single (first lhs) (first rhs))]
+          (cons front tail)
+          tail))
 ))
 
