@@ -6,6 +6,9 @@
   {:inside inside}
 )
 
+(def %D (unq :D))
+(def %I (unq :I))
+
 (defn unq?
   [item]
   (instance? clojure.lang.PersistentArrayMap item))
