@@ -1,8 +1,8 @@
 (ns adiff.core)
 
 (defrecord reader
-  "create a list item with special behavior, eg it reads from input"
-  [:inside]
+  ;"create a list item with special behavior, eg it reads from input"
+  [inside]
 )
 
 (def %D (reader. :D))
@@ -14,16 +14,16 @@
 
 (defn delete?
   [item]
-  (and (reader? item) (= (item :inside) :D)))
+  (and (reader? item) (= (:inside item) :D)))
 
 (defn keep?
   [item]
-  (and (reader? item) (= (item :inside) :I)))
+  (and (reader? item) (= (:inside item) :I)))
 
 (defn write-dimension
   [item]
   ; reader D is really the only thing with a w of 0
-  (if (and (reader? item) (= (item :inside) :D)) 0 1))
+  (if (and (reader? item) (= (:inside item) :D)) 0 1))
 
 (defn read-dimension
   [item]
@@ -44,7 +44,7 @@
   (cond
     (delete? lhs)
       (if (reader? rhs)
-        (reader :D)   ; :D has to delete what rhs would have read
+        %D   ; :D has to delete what rhs would have read
         nil)  ; D*y = []
     (keep? lhs) rhs
   )
