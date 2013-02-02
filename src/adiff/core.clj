@@ -2,11 +2,12 @@
 
 (defrecord reader
   ;"create a list item with special behavior, eg it reads from input"
-  [inside]
+  [type      ; either :scalar or :vector
+   inside]   ; generally :I or :D, maybe a list
 )
 
-(def %D (reader. :D))
-(def %I (reader. :I))
+(def %D (reader. :scalar :D))
+(def %I (reader. :scalar :I))
 
 (defn reader?
   [item]
