@@ -37,6 +37,9 @@
   [patch]
   [(apply + (map write-dimension patch)) (apply + (map read-dimension patch))])
 
+(defn patch
+  [& elements]
+  (vec elements))
 
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
