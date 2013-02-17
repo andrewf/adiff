@@ -4,9 +4,9 @@
 
 (deftest singles
   (testing "Single items"
-    (is (= (compose (patch %D) (patch :y)) (patch )))
-    (is (= (compose (patch :y) (patch ))  (patch :y)))
-    (is (= (compose (patch ) (patch %D)) (patch %D)))
+    (is (= (compose (patch %D) (patch :y)) (patch)))
+    (is (= (compose (patch :y) (patch)) (patch :y)))
+    (is (= (compose (patch) (patch %D)) (patch %D)))
     (is (= (compose (patch %I) (patch :y)) (patch :y)))
     (is (= (compose (patch %I) (patch %I)) (patch %I)))
     (is (= (compose (patch %D) (patch %I)) (patch %D)))
@@ -16,14 +16,36 @@
 
 (deftest lists
   (testing "compatible lists"
-    (is (= (compose (patch ) (patch )) (patch )))
-    (is (= (compose (patch %D %D %I %I :g) (patch :a :b :c :d)) (patch :c :d :g)))
-    (is (= (compose (patch %D %I %D :f) (patch %D %D %I %I :g)) (patch %D %D %D %I :f)))
-    (is (= (compose (patch %D %D %D %I :f) (patch :a :b :c :d)) (patch :d :f)))
-    (is (= (compose (patch %D %I %D :f) (patch :c :d :g)) (patch :d :f)))
-    (is (= (compose (patch %I %I :x :y :z) (patch %D %D %D %D %I %I)) (patch %D %D %D %D %I %I :x :y :z)))
-    (is (= (compose (patch :y) (patch %D)) (patch %D :y)))
-    (is (= (compose (patch %D %D %D %D %I %I :x :y :z) (patch :a :b :c :d :e :f)) (patch :e :f :x :y :z))))
+    (is (= (compose (patch) (patch)) (patch)))
+
+    (is (= (compose (patch %D %D %I %I :g)
+                    (patch :a :b :c :d))
+           (patch :c :d :g)))
+
+    (is (= (compose (patch %D %I %D :f)
+                    (patch %D %D %I %I :g))
+           (patch %D %D %D %I :f)))
+
+    (is (= (compose (patch %D %D %D %I :f)
+                    (patch :a :b :c :d))
+           (patch :d :f)))
+
+    (is (= (compose (patch %D %I %D :f)
+                    (patch :c :d :g))
+           (patch :d :f)))
+
+    (is (= (compose (patch %I %I :x :y :z)
+                    (patch %D %D %D %D %I %I))
+           (patch %D %D %D %D %I %I :x :y :z)))
+
+    (is (= (compose (patch :y)
+                    (patch %D))
+           (patch %D :y)))
+
+    (is (= (compose (patch %D %D %D %D %I %I :x :y :z)
+                    (patch :a :b :c :d :e :f))
+           (patch :e :f :x :y :z))))
+
   (testing "incompatible lists"
     (is (thrown? UnsupportedOperationException (compose (patch %D) (patch ))))
     (is (thrown? UnsupportedOperationException (compose (patch %I %I :x) (patch :a :b :c) )))
