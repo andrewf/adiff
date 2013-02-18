@@ -21,6 +21,14 @@
   [item]
   (and (reader? item) (= (:inside item) :I)))
 
+(defrecord stream-dimension
+  ;"A write-read pair for a sequence of scalar patch elements"
+  [write read])
+
+(defn stream
+  [write read]
+  (stream-dimension. write read))
+
 (defn write-dimension
   [item]
   ; reader D is really the only thing with a w of 0
@@ -31,11 +39,10 @@
   ; only readers can read
   (if (reader? item) 1 0))
 
-
 (defn dimension
   "return [write, read] dimensions"
   [patch]
-  [(apply + (map write-dimension patch)) (apply + (map read-dimension patch))])
+  [(stream (apply + (map write-dimension patch)) (apply + (map read-dimension patch)))])
 
 (defn patch
   [& elements]
@@ -61,8 +68,8 @@
   (cond
     
     ; read dimension of lhs must = write dimension of rhs
-    (not (= ((dimension lhs) 1)
-            ((dimension rhs) 0)))
+    (not (= (:read  ((dimension lhs) 0))
+            (:write ((dimension rhs) 0))))
       (throw (UnsupportedOperationException.
               "Cannot compose patches with incompatible dimension"))
 
