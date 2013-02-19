@@ -25,6 +25,11 @@
   ;"A write-read pair for a sequence of scalar patch elements"
   [write read])
 
+(defn patch-dimension
+  "a patch dimension is a vector tagged with patch-dimension meta attr"
+  [& args]
+  (with-meta (vec args) {:patch-dimension true}))
+
 (defn stream
   [write read]
   (stream-dimension. write read))
@@ -39,14 +44,42 @@
   ; only readers can read
   (if (reader? item) 1 0))
 
-(defn dimension
-  "return [write, read] dimensions"
-  [patch]
-  [(stream (apply + (map write-dimension patch)) (apply + (map read-dimension patch)))])
-
 (defn patch
+  "a patch is a vector tagged with the patch meta attr"
   [& elements]
-  (vec elements))
+  (with-meta (vec elements) {:patch true}))
+
+(defn patch?
+  [item]
+  (= (:patch (meta item)) true))
+
+(defn dimension
+  "Return patch-dimension of patch"
+  [patch]
+  (if (empty? patch)
+    (patch-dimension (stream 0 0))
+    (reduce
+      (fn [sofar nextup]
+        ; if nextup is a patch, add its dimension
+        ; if nextup is a scalar, make a new stream-dimension
+        ;    or add to an existing one
+        (if (patch? nextup)
+           (conj sofar (dimension nextup))
+           ; nextup is a scalar
+           (let [new-write (write-dimension nextup)
+                 new-read  (read-dimension nextup)
+                 last-index (- (count sofar) 1)  ; index of tailmost element
+                 last-item (get sofar last-index)] ; actual tailmost element
+             (if (instance? stream-dimension last-item)
+               (let [old-write (:write last-item)
+                     old-read (:read last-item)]
+                 ; add the new write and read values to the last stream dimension
+                 (assoc sofar last-index (stream (+ old-write new-write)
+                                                 (+ old-read new-read))))
+               ; have to make a new stream-dimension
+               (conj sofar (stream new-write new-read))))))
+      (patch-dimension )
+      patch)))
 
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
@@ -68,8 +101,8 @@
   (cond
     
     ; read dimension of lhs must = write dimension of rhs
-    (not (= (:read  ((dimension lhs) 0))
-            (:write ((dimension rhs) 0))))
+    (not (= (:read  (get (dimension lhs) 0))
+            (:write (get (dimension rhs) 0))))
       (throw (UnsupportedOperationException.
               "Cannot compose patches with incompatible dimension"))
 
