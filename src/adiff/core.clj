@@ -13,6 +13,15 @@
   [item]
   (instance? reader item))
 
+(defn vector-reader?
+  [item]
+  ; ought to be able to do this with short-circuit and
+  (if (reader? item)
+    (if (= (:type item) :vector)
+      true
+      false)
+    false))
+
 (defn delete?
   [item]
   (and (reader? item) (= (:inside item) :D)))
@@ -49,6 +58,20 @@
   [& elements]
   (with-meta (vec elements) {:patch true}))
 
+(defn ensure-patch
+  "if vector is passed in, return patch version"
+  [item]
+  (if (vector? item)
+    (with-meta item (assoc (meta item) :patch true))
+    item))
+
+(defn %
+  "shortcut for making readers"
+  [item]
+  (if (vector? item)
+    (reader. :vector (ensure-patch item))
+    (reader. :scalar item)))
+
 (defn patch?
   [item]
   (= (:patch (meta item)) true))
@@ -63,9 +86,9 @@
         ; if nextup is a patch, add its dimension
         ; if nextup is a scalar, make a new stream-dimension
         ;    or add to an existing one
-        (if (patch? nextup)
-           (conj sofar (dimension nextup))
-           ; nextup is a scalar
+        (if (vector-reader? nextup)
+           (conj sofar (dimension (:inside nextup)))
+           ; nextup is a scalar, or close enough as makes no difference
            (let [new-write (write-dimension nextup)
                  new-read  (read-dimension nextup)
                  last-index (- (count sofar) 1)  ; index of tailmost element

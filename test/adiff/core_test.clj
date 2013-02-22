@@ -71,5 +71,6 @@
     (is (= (dimension (patch %I %D :a :b %D)) [(stream 3 3)]))
     (is (= (dimension (patch %D %D %I %I :f)) [(stream 3 4)]))
     (is (= (dimension (patch %D %D %D %D %I %I :x :y :z)) [(stream 5 6)]))
-    (is (= (dimension (patch %D %I (patch :foo %I %D) :x %I)) [(stream 1 2) (patch-dimension (stream 2 2)) (stream 2 1)])))
+    (is (= (dimension (patch %D %I (% (patch :foo %I %D)) :x %I)) [(stream 1 2) (patch-dimension (stream 2 2)) (stream 2 1)]))
+    (is (= (dimension (patch %D %I (patch :foo %I %D) :x %I)) [(stream 4 3)])))
 )
