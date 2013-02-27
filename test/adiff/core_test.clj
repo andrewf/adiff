@@ -45,7 +45,11 @@
 
     (is (= (compose (patch %D %D %D %D %I %I :x :y :z)
                     (patch :a :b :c :d :e :f))
-           (patch :e :f :x :y :z))))
+           (patch :e :f :x :y :z)))
+
+    (is (= (compose (patch %D :x %I (% (patch :y %I %D)) %I %I %D)
+                    (patch :a :b (patch :c :d) :e :f :g))
+           (patch :x :b (patch :y :c) :e :f))))
 
   (testing "incompatible lists"
     (is (thrown? UnsupportedOperationException (compose (patch %D) (patch ))))

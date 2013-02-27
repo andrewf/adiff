@@ -104,11 +104,50 @@
       (patch-dimension )
       patch)))
 
+(declare compose-single)
+
+(defn compose
+  "Process next glyphs from RHS and LHS, and return resulting patch. LHS is patch, RHS is source"
+  [lhs rhs]
+  (if-let [rhs0 (first rhs)]
+    (if (= (write-dimension rhs0) 0)
+      (cons rhs0 (compose lhs (rest rhs)))
+      ; if rhs0 is a writer...
+      (if-let [lhs0 (first lhs)]
+        (if (reader? lhs0)
+          ; compose the two head elements and cons result...
+          (let [tail (compose (rest lhs) (rest rhs))]
+            (if-let [front (compose-single lhs0 rhs0)]
+              (cons front tail)
+              tail))
+          ; lhs reads 0, is inserted
+          (cons lhs0 (compose (rest lhs) rhs)))
+        ; lhs is empty, cannot write
+        (throw (UnsupportedOperationException. "too many writers in RHS"))))
+    ; rhs is empty
+    (if-let [lhs0 (first lhs)]
+      (if (reader? lhs0)
+        (throw (UnsupportedOperationException. "too many readers in LHS"))
+        ; lhs reads 0, is inserted
+        (cons lhs0 (compose (rest lhs) rhs)))
+      ; lhs is empty
+      '()  ; all done, return empty list
+)))
+
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
   [lhs rhs]
   (assert (reader? lhs)) ; otherwise wouldn't be a reader, and composing is invalid
   (cond
+    (vector-reader? lhs)
+      (let [left-patch (:inside lhs)]
+        (cond 
+          (vector-reader? rhs)
+            (compose left-patch (:inside rhs))
+          (patch? rhs)
+            (compose left-patch rhs)
+          :else (throw (UnsupportedOperationException.
+                        "tried to compose patch with scalar"))))
     (delete? lhs)
       (if (reader? rhs)
         %D   ; :D has to delete what rhs would have read
@@ -116,35 +155,3 @@
     (keep? lhs) rhs
   )
 )
-
-
-(defn compose
-  "Process next glyphs from RHS and LHS, and return resulting patch. LHS is patch, RHS is source"
-  [lhs rhs]
-  (cond
-    
-    ; read dimension of lhs must = write dimension of rhs
-    (not (= (:read  (get (dimension lhs) 0))
-            (:write (get (dimension rhs) 0))))
-      (throw (UnsupportedOperationException.
-              "Cannot compose patches with incompatible dimension"))
-
-    ; terminate if either list is empty
-    (and (empty? lhs) (empty? rhs)) '()
-
-    ; propagate write-0 items from source to output
-    (= (write-dimension (first rhs)) 0) (cons (first rhs) (compose lhs (rest rhs)))
-    
-    ; insert read-0 items from patch (lhs) to output
-    (= (read-dimension (first lhs)) 0) (cons (first lhs) (compose (rest lhs) rhs))
-
-    ; the two head elements are read-1 and write-1, composable
-    ; compose them, and cons the (optional) result with the composition
-    ; of the rest of the list. Be sure to handle empty cases
-    :else
-      (let [tail (compose (rest lhs) (rest rhs))]
-        (if-let [front (compose-single (first lhs) (first rhs))]
-          (cons front tail)
-          tail))
-))
-
