@@ -54,6 +54,10 @@
     (is (= (compose (patch (patch :y %D) (% (patch %D %D :x :z)) %D :w)
                     (patch (patch :a :b) :c))
            (patch (patch :y %D) (patch :x :z) :w)))
+
+    (is (= (compose (patch %D (patch :a :b :x) %I)
+                    (patch (patch :a :b :c) (patch :d :e)))
+           (patch (patch :a :b :x) (patch :d :e))))
   )
 
   (testing "incompatible lists"
