@@ -131,7 +131,7 @@
         ; lhs reads 0, is inserted
         (cons lhs0 (compose (rest lhs) rhs)))
       ; lhs is empty
-      '()  ; all done, return empty list
+      (patch)  ; all done, return empty patch
 )))
 
 (defn compose-single
