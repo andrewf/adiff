@@ -53,28 +53,14 @@
   ; only readers can read
   (if (reader? item) 1 0))
 
-(defn patch
-  "a patch is a vector tagged with the patch meta attr"
-  [& elements]
-  (with-meta (vec elements) {:patch true}))
-
-(defn ensure-patch
-  "if vector is passed in, return patch version"
-  [item]
-  (if (vector? item)
-    (with-meta item (assoc (meta item) :patch true))
-    item))
-
 (defn %
   "shortcut for making readers"
   [item]
   (if (vector? item)
-    (reader. :vector (ensure-patch item))
+    (reader. :vector item)
     (reader. :scalar item)))
 
-(defn patch?
-  [item]
-  (= (:patch (meta item)) true))
+(def patch? vector?)
 
 (defn dimension
   "Return patch-dimension of patch"
@@ -131,7 +117,7 @@
         ; lhs reads 0, is inserted
         (cons lhs0 (compose (rest lhs) rhs)))
       ; lhs is empty
-      (patch)  ; all done, return empty patch
+      []  ; all done, return empty patch
 )))
 
 (defn compose-single
