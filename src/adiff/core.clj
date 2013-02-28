@@ -60,6 +60,7 @@
     (reader. :vector item)
     (reader. :scalar item)))
 
+; perhaps should be vector? or list?
 (def patch? vector?)
 
 (defn dimension
@@ -124,20 +125,20 @@
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
   [lhs rhs]
   (assert (reader? lhs)) ; otherwise wouldn't be a reader, and composing is invalid
-  (cond
-    (vector-reader? lhs)
-      (let [left-patch (:inside lhs)]
+  (let [lhs-inside (:inside lhs)]
+    (cond
+      (patch? lhs-inside)
         (cond 
           (vector-reader? rhs)
-            (compose left-patch (:inside rhs))
+            (compose lhs-inside (:inside rhs))
           (patch? rhs)
-            (compose left-patch rhs)
+            (compose lhs-inside rhs)
           :else (throw (UnsupportedOperationException.
-                        "tried to compose patch with scalar"))))
-    (delete? lhs)
-      (if (reader? rhs)
-        %D   ; :D has to delete what rhs would have read
-        nil)  ; D*y = []
-    (keep? lhs) rhs
-  )
-)
+                        "tried to compose patch with scalar")))
+      (= :D lhs-inside)
+        (if (reader? rhs)
+          %D   ; :D has to delete what rhs would have read
+          nil)  ; D*y = []
+      (= :I lhs-inside)
+        rhs
+)))
