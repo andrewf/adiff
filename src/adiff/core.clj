@@ -118,8 +118,9 @@
       []  ; all done, return empty patch
 )))
 
-; perhaps should be vector? or list?
-(def patch? vector?)
+(defn patch?
+  [item]
+  (or (vector? item) (list? item)))
 
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"

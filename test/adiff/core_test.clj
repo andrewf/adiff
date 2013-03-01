@@ -62,6 +62,10 @@
     (is (= (compose [ (% [ %I %I %D :x]) %I]
                     [ [ :a :b :c] [ :d :e]])
            [ [ :a :b :x] [ :d :e]]))
+    
+    (is (= (compose [ (% [%I %D :x])]
+                    [ '(:a :b)])
+           [ '(:a :x)]))
   )
 
   (testing "incompatible lists"
