@@ -60,9 +60,6 @@
     (reader. :vector item)
     (reader. :scalar item)))
 
-; perhaps should be vector? or list?
-(def patch? vector?)
-
 (defn dimension
   "Return patch-dimension of patch"
   [patch]
@@ -120,6 +117,9 @@
       ; lhs is empty
       []  ; all done, return empty patch
 )))
+
+; perhaps should be vector? or list?
+(def patch? vector?)
 
 (defn compose-single
   "compose a read-1 lhs and write-1 rhs. nil means don't add anything"
