@@ -49,8 +49,7 @@
   (let [[found  e] (maybe-compose a b)]
     (if (not= found nil)
       (if (not= found result)
-        (println (str found " != " result))
-        (println "success"))
+        (println (str found " != " result)))
       (println (str "failed to do compose: " e)))))
 
 (defn test-four
