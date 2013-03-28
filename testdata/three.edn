@@ -1,0 +1,4 @@
+(%I %I %D \f %I %I)
+[%I %D \a \b \c %I]
+(\x \y \z)
+(\x \a \f \c \z)
