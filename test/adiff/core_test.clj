@@ -66,6 +66,12 @@
     (is (= (compose [ (% [%I %D :x])]
                     [ '(:a :b)])
            [ '(:a :x)]))
+
+    ; make sure lazy seqs are recognized as patches
+    ; map returns a lazy seq
+    (is (= (compose [%I (% [%D %D :a :b]) %I]
+                    [:x (map (fn [a] a) [:y :z]) :w])
+           [:x [:a :b] :w]))
   )
 
   (testing "incompatible lists"
