@@ -1,5 +1,7 @@
 ; tests all *.edn files in directory specified as cmdline arg
 ; for associativity correctness. Ok, maybe not
+; run like `lein run -m adiff.assoctest testdata'
+
 (ns adiff.assoctest
   (:use adiff.core)
   (:import java.io.File)
@@ -93,7 +95,3 @@
           (println (str "reading " (.getName f)))
           (testfile f))))
   ))
-
-  ;(testthem [%D :y (% [%I %D :x %I]) %I]
-  ;          [%I (% [:a :b %I %D]) (% [%I %I 3])]
-  ;          [ [:Q :R :S] [:T :U] [:V :W]])
