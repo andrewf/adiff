@@ -29,7 +29,10 @@
   [patches]
   (let [mapper (fn [item]
                  (cond
-                   (coll? item) (sugarify item)
+                   (coll? item)
+                     (if (= (first item) '%)
+                       (% (sugarify (second item)))
+                       (sugarify item))
                    (= item '%D) %D
                    (= item '%I) %I
                    :else item))]
@@ -49,7 +52,7 @@
   (let [[found  e] (maybe-compose a b)]
     (if (not= found nil)
       (if (not= found result)
-        (println (str found " != " result)))
+        (println (str "failed " found " != " result)))
       (println (str "failed to do compose: " e)))))
 
 (defn test-four
