@@ -76,7 +76,7 @@ not quite work. Naively,
 The trick is to carry %D's in the right patch into the output. This makes sure
 that whatever the %D would have deleted if we had composed from right to left
 still gets deleted. Also, %D*%I = %D for similar reasons: the %D needs to delete
-whatever the I would have kept if it had been evaluated first. Re-evaluating the
+whatever the %I would have kept if it had been evaluated first. Re-evaluating the
 second example above with the new rule, we get:
 
     ([x %I %D]*[%D %I %I])*[a b c] = [%D x %I %D]*[a b c] = [x b]
@@ -124,18 +124,20 @@ operator. Of course we can also keep a list in its entirety with an %I.
 Here are the necessary extensions to the composition rules, neglecting the
 "rest of the patch" gunk that made the previous definitions so long.
 
-    <[...]> * <> = <[...]>
-    <%I> * <[...]> = <[...]>
-    <%I> * <%[...]> = <%[...]>
-    <%[...]> * <%I> = <%[...]>
-    <%D> * <[...]> = <>
-    <%[...]> * <[,,,]> = <[...*,,,]>
-    <%[...]> * <%[,,,]> = <%[...*,,,]>
+    <[LLL]> * <> = <[LLL]>
+    <%I> * <[LLL]> = <[LLL]>
+    <%I> * <%[LLL]> = <%[LLL]>
+    <%[LLL]> * <%I> = <%[LLL]>
+    <%D> * <[LLL]> = <>
+    <%[LLL]> * <[RRR]> = <[LLL*RRR]>
+    <%[LLL]> * <%[RRR]> = <%[LLL*RRR]>
+
+Where LLL and RRR are sequences of elements.
 
 Notice the difference between the last two. A patch composed with a list
 returns a plain list; only when you compose two patches is the result a patch
 that can be applied to something else. This is important for preserving
-associativity. If %[...] * [,,,] = %[...*,,,] , then an expression that did not
+associativity. If %[LLL] * [RRR] = %[LLL*RRR] , then an expression that did not
 originally read anything from an input patch has suddenly turned into a reader.
 This will break associativity, even if it happens to work dimensionally,
 because the resulting patch will attempt to modify something that should
@@ -153,8 +155,7 @@ some kind of run-length encoding to make this more eficient.
 
 Just call the adiff.core.compose function with two vectors that may or may
 not contain any special patch operators, of compatible sizes. In principle
-anything that supports (first) and (rest) should work, but right now nested
-patches are assumed to be vectors. compose will raise UnsupportedOperationException
+anything that supports (first) and (rest) should work. compose will raise UnsupportedOperationException
 if the patches are incompatible.
 
 ## License
