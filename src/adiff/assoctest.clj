@@ -4,6 +4,7 @@
 
 (ns adiff.assoctest
   (:use adiff.core)
+  (:require [clojure.edn :as edn])
   (:import java.io.File)
   (:import java.io.FileReader)
   (:import java.io.PushbackReader))
@@ -13,8 +14,8 @@
   "java.io.File -> clojure data structures, all of them"
   [f]
   (let [pbr (PushbackReader. (FileReader. f))
-        eof (Object.) ]
-    (take-while #(not= % eof) (repeatedly #(read pbr false eof)))))
+        end (Object.)]
+    (take-while #(not= % eof) (repeatedly #(edn/read {:eof end} pbr)))))
 
 
 (defn testthem
