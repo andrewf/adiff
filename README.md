@@ -36,11 +36,11 @@ Google-fu is inadequate.
 
 ### Simple (non-nested) patches
 
-Let's first consider patches consisting of simple lists of objects, of which only two are special, %I and %D. For example:
+Let's first consider patches consisting of simple lists of objects, of which only two are special, `%I` and `%D`. For example:
 
     [a b c d] * [] = [a b c d]
 
-where * is patch composition. The %I token copies, or "reads" a symbol
+where `*` is patch composition. The `%I` (for "identity") token copies, or "reads" a symbol
 from the RHS into the output.
 
     [a b %I c d] * [x] = [a b x c d]
@@ -49,20 +49,20 @@ The number of "reads" in the patch, that is the LHS, must be balanced with
 the number of "writes" in the input, or RHS. We will soon have to develop
 concepts of the "write" and "read" dimensions of a patch to express this.
 
-The %D token deletes or skips elements from the input.
+The `%D` token deletes or skips elements from the input.
 
-    [x y %D I] * [a b] = [x y b]
+    [x y %D %I] * [a b] = [x y b]
 
-%D reads a token from the input but does not write to the output; it has a read
-dimension of 1 and a write dimension of 0. We can say that %I has write and
+`%D` reads a token from the input but does not write to the output; it has a read
+dimension of 1 and a write dimension of 0. We can say that `%I` has write and
 read dimensions of 1, and anything else has a read dimension of 0 and write
-dimension of 1. We use '%' to indicate that some object has special behavior
+dimension of 1. We use `%` to indicate that some object has special behavior
 that interacts with an input patch.
 
 Now for patch dimensions: a simple patch's write and read dimensions are the
 sum of the write and read dimensions of its elements. Any two patches where
 the left patch's read dimension matches the left patch's write dimension can
-be composed. So [%D %D %I y %I] has a write dimension of 3 and a read dimension
+be composed. So `[%D %D %I y %I]` has a write dimension of 3 and a read dimension
 of 4. These dimensions are used much more in mathematically analyzing patches
 than in actually evaluating them.
 
@@ -73,21 +73,24 @@ not quite work. Naively,
     [x %I %D]*([%D %I %I]*[a b c]) = [x %I %D]*[b c] = [x b]
     ([x %I %D]*[%D %I %I])*[a b c] = [x %I]*[a b c] = dimensionally incompatible
 
-The trick is to carry %D's in the right patch into the output. This makes sure
-that whatever the %D would have deleted if we had composed from right to left
-still gets deleted. Also, %D*%I = %D for similar reasons: the %D needs to delete
-whatever the %I would have kept if it had been evaluated first. Re-evaluating the
+The trick is to carry `%D`s in the right patch into the output. This makes sure
+that whatever the `%D` would have deleted if we had composed from right to left
+still gets deleted. Also, `%D*%I = %D` for similar reasons: the `%D` needs to delete
+whatever the `%I` would have kept if it had been evaluated first. Re-evaluating the
 second example above with the new rule, we get:
 
     ([x %I %D]*[%D %I %I])*[a b c] = [%D x %I %D]*[a b c] = [x b]
 
-%I*%D is undefined because of dimensionality, except that [%I]*[%D] = [%D %I].
+`%I*%D` is undefined because of dimensionality, except that `[%I]*[%D] = [%D %I]`.
+The ordering of `%D` and `%I` is arbitrary in this situation. I picked it this way
+because it seems to better express replacing some elements with others, the most
+likely semantic situation to trigger the ambiguity.
 
 So that's the result of about 3 days worth of obsessing over the problem. In
 the following semi-formal definition, I'll write arbitrary sequences of symbols
-within patches as <...>, and annotate them with their write and read
-dimensions, in that order, like <a b I D>:3,2 and <...>:a,b . Also, assume
-y is any symbol with dimension 1,0, basically any non-special symbol.
+within patches as `<...>`, and annotate them with their write and read
+dimensions, in that order, like `<a b I D>:3,2` and `<...>:a,b` . Also, assume
+`y` is any symbol with dimension 1,0, basically any non-special symbol.
 
     <y <...>:a,b> * <  <...>:b,c> = <y <...>:a,b * <...>:b,c>
     <D <...>:a,b> * <y <...>:b,c> = <  <...>:a,b * <...>:b,c>
@@ -114,12 +117,12 @@ regular object:
     [a b [c d e] %D %I] * [x y] = [a b [c d e] y]
 
 Now we also want to be able to selectively modify parts of a list. To do so
-we can make an entire list into a reader, represented like %[...] (or in Clojure code, (% [...])).
+we can make an entire list into a reader, represented like `%[...]` (or in Clojure code, `(% [...])`).
 
    [ %[a %D %D %I] %D [b c] ] * [ [x y z] [q r] ] = [ [a z] [b c] ]
 
-Notice how in that example we also deleted a whole list in one shot with a %D
-operator. Of course we can also keep a list in its entirety with an %I.
+Notice how in that example we also deleted a whole list in one shot with a `%D`
+operator. Of course we can also keep a list in its entirety with an `%I`.
 
 Here are the necessary extensions to the composition rules, neglecting the
 "rest of the patch" gunk that made the previous definitions so long.
@@ -137,7 +140,7 @@ Where LLL and RRR are sequences of elements.
 Notice the difference between the last two. A patch composed with a list
 returns a plain list; only when you compose two patches is the result a patch
 that can be applied to something else. This is important for preserving
-associativity. If %[LLL] * [RRR] = %[LLL*RRR] , then an expression that did not
+associativity. If `%[LLL] * [RRR] = %[LLL*RRR]` , then an expression that did not
 originally read anything from an input patch has suddenly turned into a reader.
 This will break associativity, even if it happens to work dimensionally,
 because the resulting patch will attempt to modify something that should
